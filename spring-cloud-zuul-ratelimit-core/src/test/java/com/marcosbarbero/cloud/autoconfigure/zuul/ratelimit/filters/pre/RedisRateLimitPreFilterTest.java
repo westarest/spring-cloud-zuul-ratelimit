@@ -4,8 +4,10 @@ import com.marcosbarbero.cloud.autoconfigure.zuul.ratelimit.config.repository.Ra
 import com.marcosbarbero.cloud.autoconfigure.zuul.ratelimit.config.repository.RedisRateLimiter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +32,9 @@ public class RedisRateLimitPreFilterTest extends BaseRateLimitPreFilterTest {
         redisTemplate = mock(StringRedisTemplate.class);
         RateLimiterErrorHandler rateLimiterErrorHandler = mock(RateLimiterErrorHandler.class);
         this.setRateLimiter(new RedisRateLimiter(rateLimiterErrorHandler, this.redisTemplate));
+        doReturn(1L).when(redisTemplate).execute((RedisCallback<Object>) any());
+        doReturn(Arrays.asList(1L, 1L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
         super.setUp();
     }
 
@@ -39,6 +44,8 @@ public class RedisRateLimitPreFilterTest extends BaseRateLimitPreFilterTest {
     public void testRateLimitExceedCapacity() throws Exception {
         doReturn(3L)
                 .when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doReturn(Arrays.asList(-1L, 1L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         super.testRateLimitExceedCapacity();
     }
@@ -49,6 +56,9 @@ public class RedisRateLimitPreFilterTest extends BaseRateLimitPreFilterTest {
     public void testRateLimit() throws Exception {
         doReturn(1L, 2L)
                 .when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doReturn(Arrays.asList(0L, 2L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
+        doReturn(1L).when(redisTemplate).execute((RedisCallback<Object>) any());
 
 
         this.request.setRequestURI("/serviceA");
@@ -66,8 +76,8 @@ public class RedisRateLimitPreFilterTest extends BaseRateLimitPreFilterTest {
 
         TimeUnit.SECONDS.sleep(2);
 
-        doReturn(1L)
-                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doReturn(Arrays.asList(1L, 2L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         this.filter.run();
         remaining = this.response.getHeader(HEADER_REMAINING + key);
@@ -76,8 +86,8 @@ public class RedisRateLimitPreFilterTest extends BaseRateLimitPreFilterTest {
 
     @Test
     public void testShouldReturnCorrectRateRemainingValue() {
-        doReturn(1L, 2L)
-                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doReturn(Arrays.asList(1L, 2L), Arrays.asList(0L,2L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         this.request.setRequestURI("/serviceA");
         this.request.setRemoteAddr("10.0.0.100");
