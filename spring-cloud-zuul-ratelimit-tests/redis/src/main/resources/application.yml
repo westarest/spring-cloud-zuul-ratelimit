@@ -21,8 +21,9 @@ zuul:
     repository: REDIS
     policy-list:
       serviceA:
-        - limit: 10
+        - limit: 5
           refresh-interval: 60
+          capacity: 20
           type:
             - origin
       serviceB:

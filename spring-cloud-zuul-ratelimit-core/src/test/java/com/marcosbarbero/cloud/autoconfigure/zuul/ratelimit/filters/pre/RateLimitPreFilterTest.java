@@ -138,7 +138,7 @@ public class RateLimitPreFilterTest {
 
         String key = "rate-limit-application_servicea_127.0.0.1";
         when(rateLimitKeyGenerator.key(any(), any(), eq(policy))).thenReturn(key);
-        Rate rate = new Rate(key, -1L, null, 60L, null);
+        Rate rate = new Rate(key, -1L, null, 60L, null, 10L);
         when(rateLimiter.consume(policy, key, null)).thenReturn(rate);
 
         assertThat(target.shouldFilter()).isEqualTo(true);

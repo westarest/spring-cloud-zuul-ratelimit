@@ -202,6 +202,12 @@ public class RateLimitProperties {
         private Long limit;
 
         /**
+         * Capacity specifies how many tokens your bucket has.
+         */
+        private Long capacity;
+
+
+        /**
          * Request time limit per refresh interval window (in seconds).
          */
         @DurationUnit(ChronoUnit.SECONDS)
@@ -224,6 +230,17 @@ public class RateLimitProperties {
 
         public Long getLimit() {
             return limit;
+        }
+
+        public Long getCapacity(){
+            if (capacity != null) {
+                return capacity;
+            }
+            return limit;
+        }
+
+        public void setCapacity(Long capacity){
+            this.capacity = capacity;
         }
 
         public void setLimit(Long limit) {

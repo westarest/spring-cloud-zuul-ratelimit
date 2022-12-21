@@ -33,7 +33,7 @@ public abstract class AbstractCacheRateLimiter implements RateLimiter {
     public synchronized Rate consume(Policy policy, String key, Long requestTime) {
         final Duration refreshInterval = policy.getRefreshInterval();
         final Long quota = policy.getQuota() != null ? policy.getQuota().toMillis() : null;
-        final Rate rate = new Rate(key, policy.getLimit(), quota, null, null);
+        final Rate rate = new Rate(key, policy.getLimit(), quota, null, null, policy.getCapacity());
 
         calcRemainingLimit(policy.getLimit(), refreshInterval, requestTime, key, rate);
         calcRemainingQuota(quota, refreshInterval, requestTime, key, rate);
