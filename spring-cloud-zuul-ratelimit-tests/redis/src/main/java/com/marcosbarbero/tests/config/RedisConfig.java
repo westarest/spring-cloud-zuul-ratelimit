@@ -1,5 +1,8 @@
 package com.marcosbarbero.tests.config;
 
+import com.marcosbarbero.cloud.autoconfigure.zuul.ratelimit.config.RateLimitUtils;
+import com.marcosbarbero.cloud.autoconfigure.zuul.ratelimit.config.properties.RateLimitProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.embedded.RedisServer;
 
@@ -20,6 +23,11 @@ public class RedisConfig {
     private static final int DEFAULT_PORT = 6379;
 
     private RedisServer redisServer;
+
+    @Bean
+    public RateLimitUtils rateLimitUtils(final RateLimitProperties rateLimitProperties){
+            return new AAMRateLimitUtils(rateLimitProperties);
+    }
 
     private static boolean available(int port) {
         try (Socket ignored = new Socket("localhost", port)) {
