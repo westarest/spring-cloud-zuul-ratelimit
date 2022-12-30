@@ -8,15 +8,15 @@ local usage = tonumber(ARGV[1])
 local refill_per_msec = tonumber(ARGV[2])
 local capacity = tonumber(ARGV[3])
 local current_seconds = tonumber(ARGV[4])
+local ttl = math.floor(capacity * 1000 / refill_per_msec) * 2
 
 
 local values = redis.call("mget", timestamp_key, token_key)
 local ret = {}
 if values[1] == false or values[2] == false then
-  --todo: set TTL
   local remain = capacity - usage
-  redis.call("set", timestamp_key, current_seconds)
-  redis.call("set", token_key, remain)
+  redis.call("setex", timestamp_key, ttl, current_seconds)
+  redis.call("setex", token_key, ttl, remain)
   ret[1] = remain
   ret[2] = current_seconds
   return ret
@@ -39,9 +39,10 @@ end
 
 --refill bucket
 if refill_num > 0 then
-  redis.call("set", timestamp_key, current_seconds)
+  redis.call("setex", timestamp_key, ttl, current_seconds)
   ret[2] = current_seconds
   remain = redis.call("incrby", token_key, refill_num)
+  redis.call("expire", token_key, ttl)
 end
 
 if remain < usage then
@@ -49,12 +50,12 @@ if remain < usage then
   return ret
 end
 
---usager token
+--consumer token
 remain = redis.call("decrby", token_key, usage)
+redis.call("expire", token_key, ttl)
 if remain == false then
   remain = -1
 end
 
-redis.call("set", token_key, remain)
 ret[1] = remain
 return ret
