@@ -9,7 +9,7 @@
         <version>2.3.12.RELEASE</version>
     </parent>
 
-    <groupId>com.marcosbarbero.cloud</groupId>
+    <groupId>com.aam</groupId>
     <artifactId>spring-cloud-zuul-ratelimit-parent</artifactId>
     <name>Rate limit configuration for Spring Cloud Netflix Zuul</name>
     <packaging>pom</packaging>
@@ -41,7 +41,7 @@
 
         <jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco.exec</jacoco.it.execution.data.file>
         <jacoco.ut.execution.data.file>${jacoco.it.execution.data.file}</jacoco.ut.execution.data.file>
-        <package.root.path>com/marcosbarbero/cloud/autoconfigure/zuul/ratelimit</package.root.path>
+        <package.root.path>com.aam/autoconfigure/zuul/ratelimit</package.root.path>
     </properties>
 
     <developers>
@@ -96,7 +96,7 @@
             </dependency>
 
             <dependency>
-                <groupId>com.marcosbarbero.cloud</groupId>
+                <groupId>com.aam</groupId>
                 <artifactId>spring-cloud-zuul-ratelimit-dependencies</artifactId>
                 <version>${project.version}</version>
                 <type>pom</type>

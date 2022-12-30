@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.marcosbarbero.cloud</groupId>
+        <groupId>com.aam</groupId>
         <artifactId>spring-cloud-zuul-ratelimit-parent</artifactId>
         <version>2.4.4-SNAPSHOT</version>
         <relativePath>..</relativePath>
