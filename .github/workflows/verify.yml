@@ -15,7 +15,7 @@ jobs:
           distribution: 'adopt'
           cache: maven
       - name: Before install
-        run: chmod -R ug+x .ci && bash ./ci/install.sh
+        run: chmod -R ug+x .ci && bash .ci/install.sh
       - name: Install
         run: "./mvnw --settings .ci/settings.xml install -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
   -B -V -q"
