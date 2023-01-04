@@ -3,7 +3,7 @@ name: Java Verify CI
 on: [push]
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,7 +14,12 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
           cache: maven
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify install
-      - name: RUN IT
-        run: cd spring-cloud-zuul-ratelimit-tests && mvn --batch-mode --update-snapshots verify
+      - name: Before install
+        run: chmod -R ug+x .ci && bash ./ci/install.sh
+      - name: Install
+        run: "./mvnw --settings .ci/settings.xml install -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
+  -B -V -q"
+      - name: Run verify
+        run: "./mvnw -pl '!spring-cloud-zuul-ratelimit-dependencies' clean org.jacoco:jacoco-maven-plugin:prepare-agent
+  verify jacoco:report coveralls:report -q -Dlogging.level.root=ERROR"
+#        run: mvn --batch-mode --update-snapshots verify
