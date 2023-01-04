@@ -13,5 +13,8 @@ jobs:
         with:
           java-version: '8'
           distribution: 'adopt'
+          cache: maven
       - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots verify install
+      - name: RUN IT
+        run: cd spring-cloud-zuul-ratelimit-tests && mvn --batch-mode --update-snapshots verify
