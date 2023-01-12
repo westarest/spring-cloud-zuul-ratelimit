@@ -79,7 +79,7 @@ public class RedisApplicationTestIT {
         assertEquals(TOO_MANY_REQUESTS, response.getStatusCode());
         assertNotEquals(RedisApplication.ServiceController.RESPONSE_BODY, response.getBody());
 
-        await().pollDelay(2, TimeUnit.SECONDS).untilAsserted(() -> {
+        await().pollDelay(5, TimeUnit.SECONDS).untilAsserted(() -> {
             final ResponseEntity<String> responseAfterReset = this.restTemplate
                 .getForEntity("/serviceB", String.class);
             final HttpHeaders headersAfterReset = responseAfterReset.getHeaders();
