@@ -141,6 +141,7 @@ public class RateLimitAutoConfiguration {
         private static final String REDIS_TEMPLATE_BEAN_NAME = "rateLimiterRedisTemplate";
 
         @Bean(REDIS_TEMPLATE_BEAN_NAME)
+        @Qualifier(REDIS_TEMPLATE_BEAN_NAME)
         public StringRedisTemplate redisTemplate(final RedisConnectionFactory connectionFactory) {
             return new StringRedisTemplate(connectionFactory);
         }

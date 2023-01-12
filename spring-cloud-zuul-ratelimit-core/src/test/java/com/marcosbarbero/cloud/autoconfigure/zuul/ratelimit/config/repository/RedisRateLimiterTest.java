@@ -9,10 +9,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -29,8 +31,11 @@ public class RedisRateLimiterTest extends BaseRateLimiterTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        doReturn(1L, 2L)
+        doReturn(2L)
                 .when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doReturn(1L).when(redisTemplate).execute((RedisCallback<Object>) any());
+        doReturn(Arrays.asList(9L, 2L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         this.target = new RedisRateLimiter(this.rateLimiterErrorHandler, this.redisTemplate);
     }
@@ -49,7 +54,7 @@ public class RedisRateLimiterTest extends BaseRateLimiterTest {
 
     @Test
     public void testConsumeRemainingLimitException() {
-        doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         Policy policy = new Policy();
         policy.setLimit(100L);
@@ -60,6 +65,7 @@ public class RedisRateLimiterTest extends BaseRateLimiterTest {
     @Test
     public void testConsumeRemainingQuotaLimitException() {
         doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         Policy policy = new Policy();
         policy.setQuota(Duration.ofSeconds(100));
@@ -70,6 +76,7 @@ public class RedisRateLimiterTest extends BaseRateLimiterTest {
     @Test
     public void testConsumeGetExpireException() {
         doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString(),anyString(), anyString());
 
         Policy policy = new Policy();
         policy.setLimit(100L);
@@ -81,7 +88,7 @@ public class RedisRateLimiterTest extends BaseRateLimiterTest {
 
     @Test
     public void testConsumeExpireException() {
-        doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doThrow(new RuntimeException()).when(redisTemplate).execute(any(), anyList(), anyString(), anyString(),anyString(), anyString());
 
         Policy policy = new Policy();
         policy.setLimit(100L);
@@ -91,14 +98,14 @@ public class RedisRateLimiterTest extends BaseRateLimiterTest {
 
     @Test
     public void testConsumeSetKey() {
-        doReturn(1L, 2L)
-                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        doReturn(Arrays.asList( 1L, 1L), Arrays.asList(2L, 2L))
+                .when(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
 
         Policy policy = new Policy();
         policy.setLimit(20L);
         target.consume(policy, "key", 0L);
 
-        verify(redisTemplate).execute(any(), anyList(), anyString(), anyString());
+        verify(redisTemplate).execute(any(), anyList(), anyString(), anyString(), anyString(), anyString());
         verify(rateLimiterErrorHandler, never()).handleError(any(), any());
     }
 }

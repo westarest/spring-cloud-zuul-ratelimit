@@ -30,6 +30,9 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class DefaultRateLimitUtils implements RateLimitUtils {
 
     private static final String ANONYMOUS_USER = "anonymous";
+    public String getAnonymousUser(){
+        return ANONYMOUS_USER;
+    }
     private static final String X_FORWARDED_FOR_HEADER_DELIMITER = ",";
 
     private final RateLimitProperties properties;

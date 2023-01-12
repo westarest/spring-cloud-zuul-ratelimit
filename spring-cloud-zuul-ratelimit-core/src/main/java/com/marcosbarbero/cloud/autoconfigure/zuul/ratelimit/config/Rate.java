@@ -43,15 +43,18 @@ public class Rate {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date expiration;
 
+    private Long capacity;
+
     public Rate() {
     }
 
-    public Rate(String key, Long remaining, Long remainingQuota, Long reset, Date expiration) {
+    public Rate(String key, Long remaining, Long remainingQuota, Long reset, Date expiration, Long capacity) {
         this.key = key;
         this.remaining = remaining;
         this.remainingQuota = remainingQuota;
         this.reset = reset;
         this.expiration = expiration;
+        this.capacity = capacity;
     }
 
     public String getKey() {
@@ -93,4 +96,13 @@ public class Rate {
     public void setExpiration(Date expiration) {
         this.expiration = expiration;
     }
+
+    public Long getCapacity(){
+        return this.capacity;
+    }
+
+    public void setCapacity(Long capacity){
+        this.capacity = capacity;
+    }
+
 }
